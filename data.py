@@ -49,6 +49,8 @@ DATASETS = {
     'sift_small': fetch_SIFT_small
 }
 
+
+
 if __name__ == '__main__':
     dataset_name = 'sift_small'
     data_path = '/home/sfy/study/data'
