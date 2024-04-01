@@ -59,7 +59,7 @@ class nnvit(nn.Module):
                  num_head = 8,
                  token_dim = 32,
                  batch_size = 1024,
-                deep = 2):
+                 deep = 2):
         
         super().__init__()
         assert Dim % token_dim == 0, "Dim is not divisible by token_dim"
@@ -67,15 +67,20 @@ class nnvit(nn.Module):
         self.dim = Dim
         self.batch_size = batch_size
         self.token_dim = token_dim
-        
+        self.num_head = num_head
         self.learnable_token = nn.Parameter(torch.randn(1, 1, self.token_dim))
         # self.pos_embedding = nn.Parameter(torch.randn(1, self.num_tokens + 1, dim))
         
-        for i in enumerate(deep):
+        self.trans = nn.ModuleList()
+        for i in range(deep):
             stage_i = []
             stage_i.append(
-                
+                Residual(
+                    Attention(dim=self.token_dim, token_num=self.num_tokens+1, num_heads=self.num_head,
+                              qkv_bias=True)
+                )
             )
+            self.trans.append(nn.Sequential(*stage_i))
         
     def forward(self, x):
         x_split = x.view(self.batch_size, self.num_tokens, self.dim // self.num_tokens)
@@ -86,7 +91,10 @@ class nnvit(nn.Module):
         y = torch.cat([expanded_token, x_split], dim=1)
         print("y",y.shape)
         
-        
+        for stage_i in self.trans:
+            y = stage_i(y)
+        y = y[:,0,:]
+        return y
         # print(y)
     
     
@@ -97,4 +105,5 @@ if __name__ == '__main__':
     dim = 128
     model = nnvit(Dim=dim,num_head=4,token_dim=32,batch_size=batch_size)
     tensor = torch.randn(batch_size, dim)
-    model(tensor)
+    out = model(tensor)
+    print(out.shape)
