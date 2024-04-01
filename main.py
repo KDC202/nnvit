@@ -22,7 +22,7 @@ def main():
     
     test_base = dataset.test_vectors.cuda()
     train_base = dataset.train_vectors.cuda()
-    
+    print(test_base.shape)
 
 if __name__ == '__main__':
     main()
