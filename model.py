@@ -60,8 +60,8 @@ class nnvit(nn.Module):
                  token_dim = 32,
                  batch_size = 1024,
                  deep = 2):
-        
         super().__init__()
+        
         assert Dim % token_dim == 0, "Dim is not divisible by token_dim"
         self.num_tokens = Dim // token_dim
         self.dim = Dim
@@ -97,7 +97,18 @@ class nnvit(nn.Module):
         return y
         # print(y)
     
-    
+def build_model(args):
+    model = nnvit(
+        Dim=args.node_feat,
+        num_head=args.num_head,
+        token_dim=args.token_dim,
+        batch_size=args.batch_size,
+        deep=args.deep
+    )
+    return model
+
+
+
     
     
 if __name__ == '__main__':
