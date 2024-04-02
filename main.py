@@ -40,7 +40,7 @@ def main():
     
     
     train_loader = util.data_loder(train_dataset,args.batch_size,shuffle=True,num_workers=20)
-    print(train_loader)
+    print(train_loader.shape)
     
     
     print(train_dist.shape)
