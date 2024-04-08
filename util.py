@@ -44,10 +44,10 @@ def euclidean_dist(x, y):
     return dist
 
 def pairwise_weighted_fusion(tensor,weight):
-    N, D = tensor.shape()
+    N, D = tensor.shape
     combined_tensor = torch.zeros(N, N, D)
-    for i in range(1024):
-        for j in range(1024):
+    for i in range(N):
+        for j in range(N):
             if i != j:  # 排除自己和自己融合
                 # 计算加权平均值
                 combined_tensor[i, j] = tensor[i] * weight + tensor[j] * weight

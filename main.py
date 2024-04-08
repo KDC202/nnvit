@@ -8,6 +8,8 @@ import time
 import util
 import torch.optim as optim
 from model import build_model
+from loss import Loss
+from train import trainer, val
 
 
 def main():
@@ -16,9 +18,10 @@ def main():
     parser.add_argument("--data_path", type=str, required=True)
     parser.add_argument("--batch_size", type=int, default=1000)
     parser.add_argument("--num_head", type=int, default=4)
-    parser.add_argument("--node_feat", type=int, default=128)
+    parser.add_argument("--node_feat", type=int, default=96)
     parser.add_argument("--token_dim", type=int, default=32)
     parser.add_argument("--deep", type=int, default=2)
+    parser.add_argument("--epoch", type=int, default=1000)
     parser.add_argument("--device", type=str, default='1')
     args = parser.parse_args()
     os.environ['CUDA_VISIBLE_DEVICES'] = args.device
@@ -34,6 +37,7 @@ def main():
     optimizer = optim.SGD(model.parameters(),lr=0.1)
     lr_scheduler = optim.lr_scheduler.ExponentialLR(optimizer, gamma=0.998)
     
+    criterion = Loss(0.5, model=model)
     
     dataset = data.Dataset(args.dataset_name,data_path=args.data_path,normalize=True)
     
@@ -42,18 +46,25 @@ def main():
     # print(train_base)
     
     
-    train_dist = util.get_dist(train_base)
-    test_dist = util.get_dist(test_base)
+    # train_dist = util.get_dist(train_base)
+    # test_dist = util.get_dist(test_base)
     
     test_dataset = util.MyDataset(test_base)
     train_dataset = util.MyDataset(train_base)
     
     
     train_loader = util.data_loder(train_dataset,args.batch_size,shuffle=True,num_workers=20)
+    val_loader = util.data_loder(test_dataset,args.batch_size,shuffle=True,num_workers=20)
     # print(train_loader.shape)
-    
-    
-    
+    for epoch in range(args.epoch):
+        nb_loss = trainer(optimizer=optimizer, train_loader=train_loader, model=model, epoch=epoch, criterion=criterion, dataset=train_dataset)
+        if epoch % 10 == 0:
+            val_loss = val(model, val_loader, criterion)
+            print(val_loss)
+            # writer.add_scalars('loss/loss_w', {'train_loss': train_loss_w, 'val_loss': val_loss_w}, epoch)
+            # writer.add_scalars('loss/loss', {'train_loss': train_loss, 'val_loss': val_loss}, epoch)
+            # writer.add_scalars('learning_rate', {'learning_rate': optimizer.param_groups[0]['lr']}, epoch)
+        lr_scheduler.step()
     
     # print(train_dist.shape)
     

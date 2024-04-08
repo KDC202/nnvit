@@ -44,8 +44,26 @@ def fetch_SIFT_small(path, train_size=None, test_size=None):
         query_vectors=mmap_fvecs(query_path),
         ground_vectors=ivecs_read(ground_path)
     )
+    
+def fetch_DEEP1M(path, train_size=1 * 10 ** 5, test_size=10 ** 6, ):
+    base_path = osp.join(path, 'deep1M_base.fvecs')
+    learn_path = osp.join(path, 'deep1M_learn.fvecs')
+    query_path = osp.join(path, 'deep1M_query.fvecs')
+    ground_path = osp.join(path, 'deep1M_groundtruth.ivecs')
+    xb = mmap_fvecs(base_path)
+    xq = mmap_fvecs(query_path)
+    xt = mmap_fvecs(learn_path)
+    gt = ivecs_read(ground_path)
+
+    return dict(
+        train_vectors=xt[:train_size],
+        test_vectors=xb[:test_size],
+        query_vectors=xq,
+        ground_vectors=gt
+    )
         
 DATASETS = {
+    'Deep1M': fetch_DEEP1M,
     'sift_small': fetch_SIFT_small
 }
 

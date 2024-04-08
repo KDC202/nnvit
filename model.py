@@ -85,11 +85,11 @@ class nnvit(nn.Module):
     def forward(self, x):
         x_split = x.view(self.batch_size, self.num_tokens, self.dim // self.num_tokens)
         # print(x)
-        print("x_split",x_split.shape)
-        expanded_token = self.learnable_token.expand(self.batch_size, -1, -1)
+        # print("x_split",x_split.shape)
+        expanded_token = self.learnable_token.expand(self.batch_size, -1, -1).cuda()
         # print(expanded_token)
-        y = torch.cat([expanded_token, x_split], dim=1)
-        print("y",y.shape)
+        y = torch.cat([expanded_token, x_split], dim=1).cuda()
+        # print("y",y.shape)
         
         for stage_i in self.trans:
             y = stage_i(y)
@@ -105,7 +105,7 @@ def build_model(args):
         batch_size=args.batch_size,
         deep=args.deep
     )
-    return model
+    return model.cuda()
 
 
 

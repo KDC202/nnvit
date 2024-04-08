@@ -11,7 +11,7 @@
             "program": "${file}",
             "console": "integratedTerminal",
             "args": [
-                "--dataset_name", "sift_small",
+                "--dataset_name", "Deep1M",
                 "--data_path", "/home/sfy/study/data"
             ]
         }
