@@ -1,16 +1,14 @@
-import torch
 import argparse
 import torch
 import numpy as np
-import os, sys
-import data
+import os, sys  
 import time
 import util
 import torch.optim as optim
 from model import build_model
 from loss import Loss
 from train import trainer, val
-
+import data
 
 def main():
     parser = argparse.ArgumentParser(description="FeCT training and evaluation")
@@ -55,8 +53,8 @@ def main():
     train_loader = util.data_loder(train_dataset,args.batch_size,shuffle=True,num_workers=20)
     val_loader = util.data_loder(test_dataset,args.batch_size,shuffle=True,num_workers=20)
     
-    train_graph = util.read_graph("/home/sfy/study/data/sift_small/saft_learn_200nn_efanna.graph")
-    test_graph = util.read_graph("/home/sfy/study/data/sift_small/saft_base_200nn_efanna.graph")
+    train_graph = util.read_graph("D:\onedrive\OneDrive - stu.zafu.edu.cn\study\code4\data\sift_small\saft_learn_200nn_efanna.graph")
+    test_graph = util.read_graph("D:\onedrive\OneDrive - stu.zafu.edu.cn\study\code4\data\sift_small\saft_base_200nn_efanna.graph")
     
     # print(train_loader.shape)
     for epoch in range(args.epoch):

@@ -55,18 +55,55 @@ def fetch_DEEP1M(path, train_size=1 * 10 ** 5, test_size=10 ** 6, ):
     xt = mmap_fvecs(learn_path)
     gt = ivecs_read(ground_path)
 
+def fetch_GIST1M(path, train_size=None, test_size=None):
+    base_path = osp.join(path, 'gist_base.fvecs')
+    learn_path = osp.join(path, 'gist_learn.fvecs')
+    query_path = osp.join(path, 'gist_query.fvecs')
+    ground_path = osp.join(path, 'gist_groundtruth.ivecs')
+    return dict(
+        train_vectors=mmap_fvecs(learn_path)[:train_size],
+        test_vectors=mmap_fvecs(base_path)[:test_size],
+        query_vectors=mmap_fvecs(query_path),
+        ground_vectors=ivecs_read(ground_path)
+    )
+
+def fetch_UKBENCH1M(path, train_size=None, test_size=None):
+    base_path = osp.join(path, 'ukbench1M_base.fvecs')
+    learn_path = osp.join(path, 'ukbench1M_learn.fvecs')
+    query_path = osp.join(path, 'ukbench1M_query.fvecs')
+    ground_path = osp.join(path, 'ukbench1M_groundtruth.ivecs')
+    return dict(
+        train_vectors=mmap_fvecs(learn_path)[:train_size],
+        test_vectors=mmap_fvecs(base_path)[:test_size],
+        query_vectors=mmap_fvecs(query_path),
+        ground_vectors=ivecs_read(ground_path)
+    )
+
+def fetch_BIGANN1M(path, train_size=5*10**5, test_size=10**6):
+    dbsize = int(test_size / 10 ** 6)
+    base_path = osp.join(path, 'bigann_base.bvecs')
+    learn_path = osp.join(path, 'bigann_learn.bvecs')
+    query_path = osp.join(path, 'bigann_query.bvecs')
+    ground_path = osp.join(path, 'gnd/idx_%dM.ivecs'% dbsize)
+    xb = mmap_bvecs(base_path)
+    xq = mmap_bvecs(query_path)
+    xt = mmap_bvecs(learn_path)
+    gt = ivecs_read(ground_path)
+
     return dict(
         train_vectors=xt[:train_size],
         test_vectors=xb[:test_size],
         query_vectors=xq,
         ground_vectors=gt
     )
-        
-DATASETS = {
-    'Deep1M': fetch_DEEP1M,
-    'sift_small': fetch_SIFT_small
-}
 
+DATASETS = {
+    'DEEP1M': fetch_DEEP1M,
+    'BIGANN1M': fetch_BIGANN1M,
+    'sift_small': fetch_SIFT_small,
+    'gist': fetch_GIST1M, 
+    'ukbench': fetch_UKBENCH1M,
+}
 
 
 if __name__ == '__main__':
